@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Bank Fixed Deposit Interest Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .result-card {
+             opacity: 0;
+             transform: translateY(20px);
+             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .result-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <div class="card p-6 md:p-8">
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Fixed Deposit Interest Calculator</h1>
+                <p class="text-gray-500 mt-2">Compare rates from different banks.</p>
+            </div>
+
+            <!-- Input Form -->
+            <form id="interest-form" class="space-y-6">
+                <div>
+                    <label for="bank-select" class="block text-sm font-medium text-gray-700 mb-1">Select Bank</label>
+                    <select id="bank-select" name="bank-select" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div>
+                    <label for="principal" class="block text-sm font-medium text-gray-700 mb-1">Principal Amount</label>
+                    <input type="number" id="principal" name="principal" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 25000000" required>
+                </div>
+
+                <div>
+                    <label for="period-select" class="block text-sm font-medium text-gray-700 mb-1">Investment Period</label>
+                    <select id="period-select" name="period-select" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <option value="" disabled selected>Select a bank first</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full btn-primary font-semibold py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Calculate
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-card" class="card p-6 md:p-8 mt-8 result-card">
+             <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Calculation Results</h2>
+             <div class="space-y-4">
+                 <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <span class="font-medium text-gray-600">Bank</span>
+                    <span id="result-bank" class="font-bold text-lg text-indigo-600"></span>
+                </div>
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <span class="font-medium text-gray-600">Selected Period</span>
+                    <span id="result-period" class="font-bold text-lg text-indigo-600"></span>
+                </div>
+                 <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <span class="font-medium text-gray-600">Applicable Interest Rate</span>
+                    <span id="result-rate" class="font-bold text-lg text-indigo-600"></span>
+                </div>
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <span class="font-medium text-gray-600">Total Interest for Period</span>
+                    <span id="total-interest" class="font-bold text-lg text-indigo-600"></span>
+                </div>
+                 <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <span class="font-medium text-gray-600">Daily Interest</span>
+                    <span id="daily-interest" class="font-bold text-lg text-indigo-600"></span>
+                </div>
+                <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg mt-4 border border-green-200">
+                    <span class="font-medium text-gray-700">Total Amount (Principal + Interest)</span>
+                    <span id="total-amount" class="font-bold text-xl text-green-600"></span>
+                </div>
+             </div>
+        </div>
+         <!-- Error Message Box -->
+        <div id="error-box" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-center">
+            <p id="error-message"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- Bank Data ---
+        // Interest rates are for demonstration. Please update with current official rates.
+        const bankData = {
+            'cb': {
+                name: 'CB Bank',
+                rates: {
+                    '7d': { text: '7 Days', periodDays: 7, rate: 10 },
+                    '15d': { text: '15 Days', periodDays: 15, rate: 10.75 },
+                    '100d_under': { text: '100 Days (under 30,000,000)', periodDays: 100, rate: 11.5 },
+                    '100d_over': { text: '100 Days (over 30,000,000)', periodDays: 100, rate: 11.85 },
+                    '1m': { text: '1 Month', periodDays: 30, rate: 11.5 },
+                    '3m': { text: '3 Months', periodDays: 90, rate: 11.75 },
+                    '6m': { text: '6 Months', periodDays: 180, rate: 12 },
+                    '9m': { text: '9 Months', periodDays: 270, rate: 12.25 },
+                    '12m': { text: '12 Months', periodDays: 365, rate: 12.5 },
+                }
+            },
+            'kbz': {
+                name: 'KBZ Bank',
+                rates: {
+                    '1m': { text: '1 Month', periodDays: 30, rate: 8.5 },
+                    '3m': { text: '3 Months', periodDays: 90, rate: 9.0 },
+                    '6m': { text: '6 Months', periodDays: 180, rate: 9.25 },
+                    '12m': { text: '12 Months', periodDays: 365, rate: 10.0 },
+                }
+            },
+            'aya': {
+                name: 'AYA Bank',
+                rates: {
+                    '1m': { text: '1 Month', periodDays: 30, rate: 8.6 },
+                    '3m': { text: '3 Months', periodDays: 90, rate: 9.1 },
+                    '6m': { text: '6 Months', periodDays: 180, rate: 9.35 },
+                    '12m': { text: '12 Months', periodDays: 365, rate: 10.1 },
+                }
+            },
+            'uab': {
+                name: 'UAB Bank',
+                rates: {
+                    '3m': { text: '3 Months', periodDays: 90, rate: 9.0 },
+                    '6m': { text: '6 Months', periodDays: 180, rate: 9.5 },
+                    '12m': { text: '12 Months', periodDays: 365, rate: 10.25 },
+                }
+            },
+            'mab': {
+                name: 'MAB Bank',
+                rates: {
+                    '90d': { text: '90 Days', periodDays: 90, rate: 9.1 },
+                    '180d': { text: '180 Days', periodDays: 180, rate: 9.6 },
+                    '365d': { text: '365 Days', periodDays: 365, rate: 10.5 },
+                }
+            },
+            'agd': {
+                name: 'AGD Bank',
+                rates: {
+                    '3m': { text: '3 Months', periodDays: 90, rate: 8.75 },
+                    '6m': { text: '6 Months', periodDays: 180, rate: 9.25 },
+                    '12m': { text: '12 Months', periodDays: 365, rate: 10.0 },
+                }
+            },
+            'shwe': {
+                name: 'Shwe Bank',
+                 rates: {
+                    '3m': { text: '3 Months', periodDays: 90, rate: 8.8 },
+                    '6m': { text: '6 Months', periodDays: 180, rate: 9.3 },
+                    '12m': { text: '12 Months', periodDays: 365, rate: 10.2 },
+                }
+            }
+        };
+
+        const bankSelect = document.getElementById('bank-select');
+        const periodSelect = document.getElementById('period-select');
+
+        // --- Functions to update UI ---
+
+        function populateBankDropdown() {
+            bankSelect.innerHTML = '<option value="" disabled selected>Select a bank</option>';
+            for (const key in bankData) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = bankData[key].name;
+                bankSelect.appendChild(option);
+            }
+        }
+
+        function updatePeriodDropdown(bankKey) {
+            const rates = bankData[bankKey].rates;
+            periodSelect.innerHTML = '<option value="" disabled selected>Select a period</option>';
+            for (const key in rates) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = rates[key].text;
+                periodSelect.appendChild(option);
+            }
+        }
+
+        // --- Event Listeners ---
+
+        bankSelect.addEventListener('change', function() {
+            const selectedBankKey = this.value;
+            if (selectedBankKey) {
+                updatePeriodDropdown(selectedBankKey);
+            } else {
+                periodSelect.innerHTML = '<option value="" disabled selected>Select a bank first</option>';
+            }
+             document.getElementById('results-card').classList.remove('visible');
+        });
+
+        document.getElementById('interest-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const errorBox = document.getElementById('error-box');
+            const resultsCard = document.getElementById('results-card');
+            errorBox.classList.add('hidden');
+            resultsCard.classList.remove('visible');
+
+            // Get user inputs
+            const principal = parseFloat(document.getElementById('principal').value);
+            const selectedBankKey = bankSelect.value;
+            const selectedPeriodKey = periodSelect.value;
+
+            // --- Input Validation ---
+            if (!selectedBankKey) {
+                showError("Please select a bank.");
+                return;
+            }
+            if (isNaN(principal) || principal <= 0) {
+                showError("Please enter a valid principal amount.");
+                return;
+            }
+            if (!selectedPeriodKey) {
+                showError("Please select an investment period.");
+                return;
+            }
+
+            // --- Additional validation for CB Bank's 100-day tiers ---
+            if (selectedBankKey === 'cb') {
+                if (selectedPeriodKey === '100d_under' && principal >= 30000000) {
+                    showError("Principal amount is too high for the selected 'under 30,000,000' tier. Please choose the 'over 30,000,000' option.");
+                    return;
+                }
+                if (selectedPeriodKey === '100d_over' && principal < 30000000) {
+                    showError("Principal amount is too low for the selected 'over 30,000,000' tier. Please choose the 'under 30,000,000' option.");
+                    return;
+                }
+            }
+            
+            // --- Determine Rate and Period ---
+            const selectedBank = bankData[selectedBankKey];
+            const selectedOption = selectedBank.rates[selectedPeriodKey];
+            const rate = selectedOption.rate;
+            const periodInDays = selectedOption.periodDays;
+            
+            // --- Calculations ---
+            const rateDecimal = rate / 100;
+            const totalInterest = principal * rateDecimal * (periodInDays / 365);
+            const dailyInterest = periodInDays > 0 ? totalInterest / periodInDays : 0;
+            const totalAmount = principal + totalInterest;
+
+            // --- Display Results ---
+            document.getElementById('result-bank').textContent = selectedBank.name;
+            document.getElementById('result-period').textContent = selectedOption.text;
+            document.getElementById('result-rate').textContent = `${rate.toFixed(2)}%`;
+            document.getElementById('total-interest').textContent = `${totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('daily-interest').textContent = `${dailyInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('total-amount').textContent = `${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            resultsCard.classList.add('visible');
+        });
+
+        function showError(message) {
+            const errorBox = document.getElementById('error-box');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorBox.classList.remove('hidden');
+        }
+
+        // --- Initial Setup ---
+        window.onload = function() {
+            populateBankDropdown();
+        };
+    </script>
+
+</body>
+</html>
