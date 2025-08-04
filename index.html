@@ -225,19 +225,13 @@
             'agd': {
                 name: 'AGD Bank',
                 rates: {
-                    '3m': { text: '3 Months', periodDays: 90, rate: 8.75 },
-                    '6m': { text: '6 Months', periodDays: 180, rate: 9.25 },
-                    '12m': { text: '12 Months', periodDays: 365, rate: 10.0 },
-                }
-            },
-            'shwe': {
-                name: 'Shwe Bank',
-                 rates: {
-                    '3m': { text: '3 Months', periodDays: 90, rate: 8.8 },
-                    '6m': { text: '6 Months', periodDays: 180, rate: 9.3 },
-                    '12m': { text: '12 Months', periodDays: 365, rate: 10.2 },
+                    '10d': { text: '7 Days', periodDays: 10, rate: 11 },
+                    '1m': { text: '3 Months', periodDays: 30, rate: 12 },
+                    
+                    '12m': { text: '1 year', periodDays: 365, rate: 13 },
                 }
             }
+            
         };
 
         const bankSelect = document.getElementById('bank-select');
