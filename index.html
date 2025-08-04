@@ -41,7 +41,7 @@
             <!-- Header Section -->
             <div class="text-center mb-6 md:mb-8">
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">Fixed Deposit Calculator</h1>
-                <p class="text-gray-500 mt-2 text-sm sm:text-base">Bank များမှ စုံစမ်းရရှိထားသမျှကို တွက်ချက်ပေးထားပါတယ်။ မိမိထားမည့် အမျိုးအစားအပေါ်မူတည်ပြီး အတိုးနှုန်းပြောင်းလဲနိုင်ပါတယ်</p>
+                <p class="text-gray-500 mt-2 text-sm sm:text-base">Bank များမှ စုံစမ်းရရှိထားသမျှကို တွက်ချက်ပေးထားပါတယ်။ မိမိထားရှိမည့် အကောင့်အမျိုးအစားပေါ်မူတည်ပြီး အတိုးနှုန်းပြောင်းလဲနိုင်ပါတယ်။ ဘဏ်ကို သေချာစွာမေးရန်လိုအပ်ပါတယ်။</p>
             </div>
 
             <!-- Input Form -->
@@ -128,10 +128,37 @@
             'kbz': {
                 name: 'KBZ Bank',
                 rates: {
-                    '1m': { text: '1 Month', periodDays: 30, rate: 8.5 },
-                    '3m': { text: '3 Months', periodDays: 90, rate: 9.0 },
-                    '6m': { text: '6 Months', periodDays: 180, rate: 9.25 },
-                    '12m': { text: '12 Months', periodDays: 365, rate: 10.0 },
+                    '30d': { text: '30 Days (Below 300m)', periodDays: 30, rate: 8.5 },
+
+'60d': { text: '60 Days (Below 300m)', periodDays: 60, rate: 9.5 },
+
+'90d': { text: '90 Days (Below 300m)', periodDays: 90, rate: 10.5 },
+
+'180d': { text: '180 Days (Below 300m)', periodDays: 180, rate: 10.75 },
+
+'270d': { text: '270 Days (Below 300m)', periodDays: 270, rate: 11.0 },
+
+'360d': { text: '360 Days (Below 300m)', periodDays: 360, rate: 11.5 },
+
+'720d': { text: '720 Days (Below 300m)', periodDays: 720, rate: 11.75 },
+
+'1080d': { text: '1080 Days (Below 300m)', periodDays: 1080, rate: 12.0 },
+
+'30d_above': { text: '30 Days (Above 300m)', periodDays: 30, rate: 9.5 },
+
+'60d_above': { text: '60 Days (Above 300m)', periodDays: 60, rate: 10 },
+
+'90d_above': { text: '90 Days (Above 300m)', periodDays: 90, rate: 11 },
+
+'180d_above': { text: '180 Days (Above 300m)', periodDays: 180, rate: 11.25 },
+
+'270d_above': { text: '270 Days (Above 300m)', periodDays: 270, rate: 11.5 },
+
+'360d_above': { text: '360 Days (Above 300m)', periodDays: 360, rate: 12 },
+
+'720d_above': { text: '720 Days (Above 300m)', periodDays: 720, rate: 12.25 },
+
+'1080d_above': { text: '1080 Days (Above 300m)', periodDays: 1080, rate: 12.5 }
                 }
             },
             'aya': {
@@ -148,9 +175,17 @@
             'uab': {
                 name: 'UAB Bank',
                 rates: {
-                    '3m': { text: '3 Months', periodDays: 90, rate: 9.0 },
-                    '6m': { text: '6 Months', periodDays: 180, rate: 9.5 },
-                    '12m': { text: '12 Months', periodDays: 365, rate: 10.25 },
+                    '30d_above': { text: '30 Days (Above 100m)', periodDays: 30, rate: 11.5 },
+
+'60d_above': { text: '60 Days (Above 100m)', periodDays: 60, rate: 11.65 },
+
+'90d_above': { text: '90 Days (Above 100m)', periodDays: 90, rate: 11.75 },
+
+'180d_above': { text: '180 Days (Above 100m)', periodDays: 180, rate: 12 },
+
+'270d_above': { text: '270 Days (Above 100m)', periodDays: 270, rate: 12.25 },
+
+'1 year': { text: '1 year (Above 100m)', periodDays: 365, rate: 12.5 },
                 }
             },
             'mab': {
